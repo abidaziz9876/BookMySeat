@@ -11,7 +11,6 @@ import (
 	"github.com/abidaziz9876/user-service/models"
 	"github.com/abidaziz9876/user-service/repository"
 	"github.com/abidaziz9876/user-service/response"
-	"github.com/abidaziz9876/user-service/services"
 	"github.com/abidaziz9876/user-service/tokens"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator"
@@ -20,53 +19,6 @@ import (
 	// "go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 )
-
-func CreateUser(postgres repository.PostgesDatabase) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		var User models.UserModel
-		err := ctx.BindJSON(&User)
-		if err != nil {
-			log.Error("can not bind with json")
-			helpers.ReturnResponse(ctx, http.StatusBadRequest, err.Error(), nil)
-			return
-		}
-		err = services.CreateUser(postgres, User)
-		if err != nil {
-			log.Error("Error occurred " + err.Error())
-			helpers.ReturnResponse(ctx, http.StatusBadRequest, err.Error(), nil)
-			return
-		}
-		helpers.ReturnResponse(ctx, http.StatusOK, "user created successfully", User.Email)
-	}
-}
-
-func GetUser(postgres repository.PostgesDatabase) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		ID := ctx.Query("id")
-		if ID == "" {
-			log.Error("id not found in the query")
-			helpers.ReturnResponse(ctx, http.StatusBadRequest, "id not found in the query", nil)
-			return
-		}
-		var id int64
-		if i, err := strconv.ParseInt(ID, 10, 64); err == nil {
-			id = i
-		} else {
-			log.Error("invalid id format")
-			helpers.ReturnResponse(ctx, http.StatusBadRequest, "invalid id format", nil)
-			return
-		}
-
-		result, err := postgres.FindUserByID(id)
-		if err != nil {
-			log.Error("Error occurred " + err.Error())
-			helpers.ReturnResponse(ctx, http.StatusBadRequest, err.Error(), nil)
-			return
-		}
-		helpers.ReturnResponse(ctx, http.StatusOK, "user details retrieved successfully", result)
-
-	}
-}
 
 func UpdateUser(postgres repository.PostgesDatabase) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -262,9 +214,8 @@ func LogIn(postgres repository.PostgesDatabase) gin.HandlerFunc {
 	}
 }
 
-
-func Check() gin.HandlerFunc  {
+func Check() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK,"Hello world")
+		ctx.JSON(http.StatusOK, "Hello world")
 	}
 }

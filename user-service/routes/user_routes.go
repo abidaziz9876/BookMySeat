@@ -11,8 +11,8 @@ func UserRoutes(router *gin.Engine) {
 	var postgres = repository.GormDBWrapper{
 		DB: config.PostGresDB,
 	}
-	router.POST("/users/createuser", controllers.CreateUser(&postgres))
-	router.GET("/users/getuser", controllers.GetUser(&postgres))
+	
+	
 	router.POST("/users/signup",controllers.SignUp(&postgres))
 	router.POST("/users/signin",controllers.LogIn(&postgres))
 	router.PUT("users/updateuser", controllers.UpdateUser(&postgres))
